@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 
-from model import ViTConfig, VisionTransformer
+from .model import ViTConfig, VisionTransformer
 
 logger = logging.getLogger(__name__)
 

@@ -13,16 +13,12 @@ Environment variables:
 
 import logging
 import os
-import sys
 from pathlib import Path
 
 import gradio as gr
 from PIL import Image
 
-# Add src/ to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
-
-from predictor import CIFAR10_CLASSES, Predictor, PredictionResult
+from src.predictor import CIFAR10_CLASSES, Predictor, PredictionResult
 
 logger = logging.getLogger(__name__)
 
