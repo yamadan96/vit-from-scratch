@@ -26,7 +26,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 
-from model import ViTConfig, VisionTransformer
+from .model import ViTConfig, VisionTransformer
 
 logger = logging.getLogger(__name__)
 
