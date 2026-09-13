@@ -1,5 +1,8 @@
 # Vision Transformer (ViT) from Scratch
 
+[![CI](https://github.com/yamadan96/vit-from-scratch/actions/workflows/ci.yml/badge.svg)](https://github.com/yamadan96/vit-from-scratch/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 PyTorch implementation of **"An Image is Worth 16x16 Words"** (Dosovitskiy et al., ICLR 2021).
 
 Built from scratch for learning — every component is self-contained with paper equation references.
