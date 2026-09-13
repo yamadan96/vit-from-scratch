@@ -18,7 +18,7 @@ from pathlib import Path
 import gradio as gr
 from PIL import Image
 
-from src.predictor import CIFAR10_CLASSES, Predictor, PredictionResult
+from src.predictor import PredictionResult, Predictor
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def _initialize_predictor() -> None:
         _predictor_error = (
             f"Checkpoint not found at: {CHECKPOINT_PATH}\n"
             "Please train the model first:\n"
-            "  uv run python src/train.py --epochs 100\n"
+            "  uv run python -m src.train --epochs 100\n"
             "Then set CHECKPOINT_DIR if needed."
         )
         logger.error(_predictor_error)
@@ -98,9 +98,7 @@ def build_app() -> gr.Blocks:
         )
 
         if _predictor_error is not None:
-            gr.Markdown(
-                f"**Warning:** {_predictor_error}"
-            )
+            gr.Markdown(f"**Warning:** {_predictor_error}")
 
         with gr.Row():
             with gr.Column():

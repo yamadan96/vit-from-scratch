@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 
-from .model import ViTConfig, VisionTransformer
+from .model import VisionTransformer, ViTConfig
 
 logger = logging.getLogger(__name__)
 
@@ -75,9 +75,7 @@ class Predictor:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def initialize(
-        self, checkpoint_path: Path, device: str = "cuda"
-    ) -> None:
+    def initialize(self, checkpoint_path: Path, device: str = "cuda") -> None:
         """Load model checkpoint and prepare for inference.
 
         Args:
@@ -93,9 +91,7 @@ class Predictor:
             return
 
         if not checkpoint_path.exists():
-            raise FileNotFoundError(
-                f"Checkpoint not found: {checkpoint_path}"
-            )
+            raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
         # Select device (fallback to CPU if CUDA unavailable)
         if device == "cuda" and not torch.cuda.is_available():
@@ -115,9 +111,7 @@ class Predictor:
         if config_dict is not None:
             config = ViTConfig(**config_dict)
         else:
-            logger.warning(
-                "No config found in checkpoint, using default ViTConfig"
-            )
+            logger.warning("No config found in checkpoint, using default ViTConfig")
             config = ViTConfig()
 
         # Build model and load weights
@@ -157,9 +151,7 @@ class Predictor:
             RuntimeError: If Predictor has not been initialized
         """
         if not self._initialized:
-            raise RuntimeError(
-                "Predictor not initialized. Call initialize() first."
-            )
+            raise RuntimeError("Predictor not initialized. Call initialize() first.")
 
         # Convert to RGB if necessary (e.g., RGBA, grayscale)
         if image.mode != "RGB":
@@ -176,7 +168,7 @@ class Predictor:
         top3_probs, top3_indices = probs.topk(3)
         top3: list[tuple[str, float]] = [
             (CIFAR10_CLASSES[idx.item()], prob.item())
-            for idx, prob in zip(top3_indices, top3_probs)
+            for idx, prob in zip(top3_indices, top3_probs, strict=True)
         ]
 
         # Best prediction

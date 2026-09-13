@@ -44,15 +44,18 @@ Input Image (32×32)
 | n_heads | 8 |
 | n_layers | 6 |
 | mlp_dim | 512 |
-| params | ~9M |
+| params | ~3.2M (3,195,146; checked in `tests/test_model.py`) |
 
 ## Quick Start
 
 ```bash
-# Install
+# Install (Linux/Windows get CUDA 12.1 wheels; macOS gets CPU/MPS wheels)
 git clone https://github.com/yamadan96/vit-from-scratch
 cd vit-from-scratch
 uv sync
+
+# Run tests (CPU only, no dataset download)
+uv run pytest
 
 # Train on CIFAR-10 (downloads automatically)
 CHECKPOINT_DIR=./checkpoints uv run python -m src.train --epochs 100
@@ -72,8 +75,19 @@ vit-from-scratch/
 │   ├── model.py      # ViT: PatchEmbedding / TransformerBlock / VisionTransformer
 │   ├── train.py      # Training loop: AdamW + CosineAnnealing + AMP
 │   └── predictor.py  # Singleton predictor for inference
+├── tests/
+│   └── test_model.py # Shapes, parameter count, equivalence to reference ops, overfit smoke test
 └── app.py            # Gradio WebApp — top-3 CIFAR-10 classification
 ```
+
+## Tests
+
+`tests/test_model.py` checks the from-scratch components against PyTorch reference operations:
+
+- `PatchEmbedding` (Linear on flattened patches) equals a strided `Conv2d` with the same weights
+- `MultiHeadSelfAttention` equals `F.scaled_dot_product_attention` with the same Q/K/V projections
+- Parameter count matches an analytic formula derived from `ViTConfig`
+- Output shapes, and a smoke test that loss drops when overfitting a single batch
 
 ## Key Implementation Details
 
@@ -87,11 +101,12 @@ vit-from-scratch/
 
 | Setting | Value |
 |---|---|
-| Dataset | CIFAR-10 (50k train / 10k val) |
+| Dataset | CIFAR-10: 45k train / 5k val (seeded split of the 50k training set); the 10k test set is held out and not evaluated yet |
 | Optimizer | AdamW (lr=1e-3, wd=0.1) |
 | Scheduler | CosineAnnealingLR |
 | Epochs | 100 |
-| Mixed precision | ✅ (torch.cuda.amp) |
+| Batch size | 128 |
+| Mixed precision | ✅ (`torch.amp`) |
 
 ## References
 
@@ -99,4 +114,4 @@ vit-from-scratch/
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
