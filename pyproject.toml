@@ -25,9 +25,17 @@ line-length = 88
 select = ["E", "W", "F", "I", "B", "UP"]
 ignore = ["E501"]
 
+# CUDA 12.1 wheels exist only for Linux/Windows; macOS falls back to PyPI (CPU/MPS)
+[tool.uv]
+# Keep macOS on the same torch minor version as the CUDA 12.1 wheels
+constraint-dependencies = [
+    "torch<2.6; sys_platform == 'darwin'",
+    "torchvision<0.21; sys_platform == 'darwin'",
+]
+
 [tool.uv.sources]
-torch = { index = "pytorch-cu121" }
-torchvision = { index = "pytorch-cu121" }
+torch = { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }
+torchvision = { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }
 
 [[tool.uv.index]]
 name = "pytorch-cu121"
@@ -36,5 +44,9 @@ explicit = true
 
 [dependency-groups]
 dev = [
+    "pytest>=8.0",
     "ruff>=0.15.11",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -8,8 +8,8 @@ Trains a ViT-Small model from scratch using:
 - Optional Weights & Biases logging
 
 Usage:
-    uv run python src/train.py --epochs 100 --batch-size 128
-    WANDB_PROJECT=vit-cifar10 uv run python src/train.py  # with W&B
+    uv run python -m src.train --epochs 100 --batch-size 128
+    WANDB_PROJECT=vit-cifar10 uv run python -m src.train  # with W&B
 """
 
 import argparse
@@ -26,7 +26,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 
-from .model import ViTConfig, VisionTransformer
+from .model import VisionTransformer, ViTConfig
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +240,11 @@ def setup_wandb(config: ViTConfig, args: argparse.Namespace) -> bool:
 
         wandb.init(
             project=wandb_project,
-            config={**asdict(config), "epochs": args.epochs, "batch_size": args.batch_size},
+            config={
+                **asdict(config),
+                "epochs": args.epochs,
+                "batch_size": args.batch_size,
+            },
         )
         logger.info("W&B initialized: project=%s", wandb_project)
         return True
@@ -251,9 +255,7 @@ def setup_wandb(config: ViTConfig, args: argparse.Namespace) -> bool:
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Train Vision Transformer on CIFAR-10"
-    )
+    parser = argparse.ArgumentParser(description="Train Vision Transformer on CIFAR-10")
     parser.add_argument(
         "--epochs",
         type=int,
